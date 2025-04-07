@@ -90,6 +90,40 @@ export const getJurnals = async () => {
     throw error;
   }
 };
+
+export interface Meditasi {
+  id: string;
+  topikMeditasi: string;
+  isiContent: string;
+  reminderMEditasi: string;
+  status: string;
+  pasienId: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+}
+
+// Fungsi untuk mengambil data meditasi
+export const getMeditasis = async () => {
+  try {
+    const response = await api.get('/meditasi/getMeditasi');
+    
+    // Periksa struktur respons
+    if (response.data && response.data.data) {
+      // Kembalikan array meditasi
+      return response.data.data as Meditasi[];
+    } else {
+      throw new Error('Gagal mendapatkan meditasi: Struktur respons tidak sesuai');
+    }
+  } catch (error: any) {
+    console.error('Error Get Meditasi:', {
+      message: error.message,
+      response: error.response ? error.response.data : 'No response',
+      status: error.response ? error.response.status : 'No status'
+    });
+    throw error;
+  }
+};
 export default api;
 
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -15,93 +15,34 @@ import {
   ChevronRight,
 } from "lucide-react-native";
 import { Stack, useRouter } from "expo-router";
+import { getMeditasis, Meditasi } from '../services/api'; // Impor fungsi dan interface
 
-const categories = [
-  { title: "Belajar Meditasi, Yuk!", color: "bg-blue-400" },
-  { title: "Meditasi Tidur", color: "bg-purple-400" },
-  { title: "Stres & Kecemasan", color: "bg-teal-400" },
-  { title: "Produktivitas & Pekerjaan", color: "bg-orange-400" },
-  { title: "Diri yang Lebih Baik", color: "bg-fuchsia-400" },
-  { title: "Kesehatan Fisik", color: "bg-green-500" },
-  { title: "Meditasi Darurat", color: "bg-red-400" },
-  { title: "Meditasi & Hidup Islami", color: "bg-cyan-400" },
-  { title: "Tenang di Rumah", color: "bg-gray-400" },
-  { title: "Meditasi Spesial", color: "bg-pink-400" },
-];
 
-const router = useRouter();
 
 export default function MedisScreen() {
   const [activeTab, setActiveTab] = useState("Meditasi");
+  const [meditasis, setMeditasis] = useState<Meditasi[]>([]);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchMeditasis = async () => {
+      try {
+        const fetchedMeditasis = await getMeditasis();
+        setMeditasis(fetchedMeditasis);
+        setLoading(false);
+      } catch (error) {
+        console.error('Gagal memuat meditasi', error);
+        setLoading(false);
+      }
+    };
+
+    fetchMeditasis();
+  }, []);
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <StatusBar style="dark" />
-
-      {/* Header */}
-      <View className="p-4 flex-row items-center justify-between">
-        <Text className="text-xl font-bold">Mindful</Text>
-        <MoreHorizontal size={24} color="black" />
-      </View>
-
-      {/* Search */}
-      <View className="px-4">
-        <View className="flex-row items-center bg-gray-200 rounded-full px-3 py-2">
-          <Search size={20} color="gray" />
-          <TextInput
-            placeholder="Cari meditasi..."
-            className="ml-2 flex-1 text-gray-700"
-          />
-        </View>
-      </View>
-
-      {/* Tabs Meditasi / Lelap */}
-      <View className="px-4 mt-4 flex-row space-x-3">
-        <TouchableOpacity
-          onPress={() => {
-            setActiveTab("Meditasi");
-            router.push("/Meditasi/reminder");
-          }}
-          className={`px-4 py-2 rounded-full ${
-            activeTab === "Meditasi" ? "bg-orange-400" : "bg-orange-100"
-          }`}
-        >
-          <Text
-            className={`font-semibold ${
-              activeTab === "Meditasi" ? "text-white" : "text-orange-400"
-            }`}
-          >
-            Meditasi
-          </Text>
-        </TouchableOpacity>
-
-
-        <TouchableOpacity
-          onPress={() => setActiveTab("Lelap")}
-          className={`px-4 py-2 rounded-full ${
-            activeTab === "Lelap" ? "bg-orange-400" : "bg-orange-100"
-          }`}
-        >
-          <Text
-            className={`font-semibold ${
-              activeTab === "Lelap" ? "text-white" : "text-orange-400"
-            }`}
-          >
-            Lelap
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Tombol Ingatkan untuk Meditasi */}
-      <View className="px-4 mt-4">
-        <TouchableOpacity className="flex-row items-center justify-between bg-white rounded-xl shadow p-4 mb-2 border border-gray-200">
-          <View className="flex-row items-center space-x-2">
-            <Bell size={20} color="#fb923c" />
-            <Text className="text-gray-800 font-medium">Ingatkan untuk Meditasi</Text>
-          </View>
-          <ChevronRight size={20} color="#9ca3af" />
-        </TouchableOpacity>
-      </View>
+      {/* ... kode sebelumnya */}
 
       {/* Topik Meditasi */}
       <ScrollView className="mt-2 px-4">
@@ -109,14 +50,28 @@ export default function MedisScreen() {
           Topik Meditasi Riliv <Text className="text-blue-500">●</Text>
         </Text>
 
-        {categories.map((item, index) => (
-          <TouchableOpacity
-            key={index}
-            className={`mb-3 p-4 rounded-lg ${item.color}`}
-          >
-            <Text className="text-white font-semibold">{item.title}</Text>
-          </TouchableOpacity>
-        ))}
+        {loading ? (
+          <Text>Memuat meditasi...</Text>
+        ) : meditasis.length === 0 ? (
+          <Text>Belum ada meditasi</Text>
+        ) : (
+          meditasis.map((meditasi) => (
+            <TouchableOpacity
+              key={meditasi.id}
+              className="mb-3 p-4 rounded-lg bg-blue-400"
+            >
+              <Text className="text-white font-semibold">
+                {meditasi.topikMeditasi}
+              </Text>
+              <Text className="text-white text-sm">
+                {meditasi.isiContent}
+              </Text>
+            </TouchableOpacity>
+          ))
+        )}
+
+        {/* Kategori default */}
+
 
         {/* CTA section */}
         <View className="items-center mt-6">
