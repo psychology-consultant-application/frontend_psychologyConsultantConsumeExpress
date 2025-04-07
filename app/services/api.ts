@@ -56,6 +56,40 @@ export const login = async (userName: string, password: string) => {
   }
 };
 
+
+
+export interface Jurnal {
+  id: string;
+  topikJurnal: string;
+  isiJurnal: string;
+  tanggalRilisJurnal: string;
+  status: string;
+  pasienId: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+}
+
+export const getJurnals = async () => {
+  try {
+    const response = await api.get('/jurnal/getJurnal');
+    
+    // Periksa struktur respons
+    if (response.data && response.data.data) {
+      // Kembalikan array jurnal
+      return response.data.data as Jurnal[];
+    } else {
+      throw new Error('Gagal mendapatkan jurnal: Struktur respons tidak sesuai');
+    }
+  } catch (error: any) {
+    console.error('Error Get Jurnal:', {
+      message: error.message,
+      response: error.response ? error.response.data : 'No response',
+      status: error.response ? error.response.status : 'No status'
+    });
+    throw error;
+  }
+};
 export default api;
 
 
