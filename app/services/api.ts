@@ -56,6 +56,39 @@ export const login = async (userName: string, password: string) => {
   }
 };
 
+// Di file api.ts
+export interface Article {
+  id: string;
+  image: string;
+  title: string;
+  description: string;
+  createdAt: string;
+  updateAt: string;
+  deletedAt: string | null;
+}
+
+// Fungsi untuk mengambil artikel
+export const getArticles = async () => {
+  try {
+    const response = await api.get('/article/getArticle');
+    
+    // Periksa struktur respons
+    if (response.data && response.data.data) {
+      // Kembalikan array artikel
+      return response.data.data as Article[];
+    } else {
+      throw new Error('Gagal mendapatkan artikel: Struktur respons tidak sesuai');
+    }
+  } catch (error: any) {
+    console.error('Error Get Artikel:', {
+      message: error.message,
+      response: error.response ? error.response.data : 'No response',
+      status: error.response ? error.response.status : 'No status'
+    });
+    throw error;
+  }
+};
+
 
 
 export interface Jurnal {
@@ -69,6 +102,7 @@ export interface Jurnal {
   updatedAt: string;
   deletedAt: string | null;
 }
+
 
 export const getJurnals = async () => {
   try {
